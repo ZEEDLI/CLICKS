@@ -801,7 +801,8 @@ footer .logo-f { font-family: 'Syne', sans-serif; font-weight: 800; color: var(-
 <!-- ============================================================
      CALCULATOR
      ============================================================ -->
-```html
+     CALCULATOR
+     ============================================================ -->
 <section id="calculator">
   <div class="container">
     <div class="section-label">Services à la carte</div>
@@ -819,29 +820,26 @@ footer .logo-f { font-family: 'Syne', sans-serif; font-weight: 800; color: var(-
             <button class="ptab" onclick="setPlatform(this,'TikTok')">🎵 TikTok</button>
           </div>
         </div>
-
         <div>
           <label class="field-label" for="service">Service</label>
           <select class="field-input" id="service" onchange="calcPrice()">
-            <option>Followers — 1 USDT / 1000</option>
-            <option>Likes — 1.2 USDT / 1000</option>
-            <option>Partages / Shares — 1.3 USDT / 1000</option>
-            <option>Vues (Reels / TikTok) — 2.5 USDT / 1000</option>
-            <option>Commentaires — 3.0 USDT / 1000</option>
+            <option value="1.5">Followers — 1.5 USDT / 1000</option>
+            <option value="1.2">Likes — 1.2 USDT / 1000</option>
+            <option value="1.8">Partages / Shares — 1.8 USDT / 1000</option>
+            <option value="2.5">Vues (Reels / TikTok) — 2.5 USDT / 1000</option>
+            <option value="3.0">Commentaires — 3.0 USDT / 1000</option>
           </select>
         </div>
-
         <div>
           <label class="field-label" for="qty">Quantité</label>
           <input class="field-input" type="number" id="qty" placeholder="ex: 2635" min="100" step="1" oninput="calcPrice()">
         </div>
-
         <div>
           <label class="field-label" for="link">Lien de ton profil / post / page</label>
           <input class="field-input" type="url" id="link" placeholder="https://www.facebook.com/...">
         </div>
 
-        <!-- Paiement -->
+        <!-- Payment — apparaît si prix calculé -->
         <div id="paySection" style="display:none;">
           <span class="field-label">Mode de paiement</span>
           <div class="pay-methods">
@@ -861,7 +859,6 @@ footer .logo-f { font-family: 'Syne', sans-serif; font-weight: 800; color: var(-
               <div class="pay-note">RedotPay / Binance</div>
             </div>
           </div>
-
           <div class="info-note" id="payNote" style="display:none;"></div>
 
           <div>
@@ -881,19 +878,19 @@ footer .logo-f { font-family: 'Syne', sans-serif; font-weight: 800; color: var(-
           <div class="icon">🧮</div>
           <p>Entre une quantité pour voir le prix</p>
         </div>
-
         <div id="resultContent" style="display:none;">
           <div class="result-row"><span class="k">Plateforme</span><span class="v" id="r-platform">—</span></div>
           <div class="result-row"><span class="k">Service</span><span class="v" id="r-service">—</span></div>
           <div class="result-row"><span class="k">Quantité</span><span class="v" id="r-qty">—</span></div>
-
           <div class="price-highlight">
             <div class="price-dz" style="margin-bottom:4px;font-size:11px;color:var(--muted);">Prix estimé</div>
             <div class="price-big" id="r-usdt">0.00 USDT</div>
             <div class="price-dz" id="r-dz">0 DA</div>
           </div>
-
-          <div class="result-row"><span class="k">Taux utilisé</span><span class="v">1 USDT = 260 DA</span></div>
+          <div class="result-row"><span class="k">Taux utilisé</span><span class="v" id="r-rate">1 USDT = 260 DA</span></div>
+          <p style="font-size:11px;color:var(--muted);margin-top:.75rem;line-height:1.5;">
+            Prix indicatif. Le montant final est confirmé par notre équipe avant paiement.
+          </p>
         </div>
       </div>
     </div>
@@ -902,97 +899,6 @@ footer .logo-f { font-family: 'Syne', sans-serif; font-weight: 800; color: var(-
 
 <div class="divider"></div>
 
-<script>
-let currentPlatform = "Facebook";
-let selectedPay = null;
-
-// PRIX PAR PLATEFORME
-const pricing = {
-  Facebook: {
-    "Followers": 1,
-    "Likes": 1.2,
-    "Partages / Shares": 1,
-    "Vues (Reels / TikTok)": 2.5,
-    "Commentaires": 3.0
-  },
-  Instagram: {
-    "Followers": 1.8,
-    "Likes": 1.4,
-    "Partages / Shares": 2.0,
-    "Vues (Reels / TikTok)": 2.8,
-    "Commentaires": 3.5
-  },
-  TikTok: {
-    "Followers": 2.0,
-    "Likes": 1.6,
-    "Partages / Shares": 2.2,
-    "Vues (Reels / TikTok)": 3.0,
-    "Commentaires": 4.0
-  }
-};
-
-function setPlatform(btn, platform) {
-  document.querySelectorAll(".ptab").forEach(b => b.classList.remove("active"));
-  btn.classList.add("active");
-  currentPlatform = platform;
-  calcPrice();
-}
-
-function calcPrice() {
-  const service = document.getElementById("service");
-  const qty = document.getElementById("qty").value;
-
-  if (!qty || qty < 100) {
-    document.getElementById("emptyState").style.display = "block";
-    document.getElementById("resultContent").style.display = "none";
-    document.getElementById("paySection").style.display = "none";
-    return;
-  }
-
-  const serviceText = service.options[service.selectedIndex].text.split(" — ")[0];
-  const pricePer1000 = pricing[currentPlatform][serviceText];
-
-  const usdt = (qty / 1000) * pricePer1000;
-  const dzd = usdt * 260;
-
-  document.getElementById("r-platform").innerText = currentPlatform;
-  document.getElementById("r-service").innerText = serviceText + " — " + pricePer1000 + " USDT / 1000";
-  document.getElementById("r-qty").innerText = qty;
-
-  document.getElementById("r-usdt").innerText = usdt.toFixed(2) + " USDT";
-  document.getElementById("r-dz").innerText = Math.round(dzd) + " DA";
-
-  document.getElementById("emptyState").style.display = "none";
-  document.getElementById("resultContent").style.display = "block";
-  document.getElementById("paySection").style.display = "block";
-}
-
-function selectPay(el, method) {
-  document.querySelectorAll(".pay-card").forEach(c => c.classList.remove("active"));
-  el.classList.add("active");
-  selectedPay = method;
-
-  const note = document.getElementById("payNote");
-  note.style.display = "block";
-
-  if (method === "baridi") note.innerText = "Paiement CCP après confirmation.";
-  if (method === "flexy") note.innerText = "Flexy = +25% frais.";
-  if (method === "crypto") note.innerText = "Paiement en USDT.";
-}
-
-function submitCalcOrder() {
-  const qty = document.getElementById("qty").value;
-  const link = document.getElementById("link").value;
-  const email = document.getElementById("calcEmail").value;
-
-  if (!qty || !link || !email || !selectedPay) {
-    alert("Remplis tous les champs.");
-    return;
-  }
-
-  alert("Commande envoyée !");
-}
-</script>
 <!-- ============================================================
      HOW IT WORKS
      ============================================================ -->
