@@ -396,6 +396,11 @@ section { padding: 5rem 1.5rem; }
   outline: none;
   appearance: none;
 }
+select.field-input {
+  appearance: auto;
+  -webkit-appearance: auto;
+  cursor: pointer;
+}
 .field-input:focus { border-color: var(--gold); }
 .field-input option { background: var(--card); }
 .calc-result {
@@ -1176,9 +1181,11 @@ function setPlatform(el, name) {
 
 /* ---- CALCULATOR ---- */
 function calcPrice() {
-  const qty   = parseInt(document.getElementById('qty').value) || 0;
-  const rate  = parseFloat(document.getElementById('service').value);
-  const svc   = document.getElementById('service').options[document.getElementById('service').selectedIndex].text.split('—')[0].trim();
+  const qty     = parseInt(document.getElementById('qty').value) || 0;
+  const sel     = document.getElementById('service');
+  if (!sel || sel.options.length === 0) return;
+  const rate    = parseFloat(sel.value);
+  const svc     = sel.options[sel.selectedIndex].text.split('—')[0].trim();
 
   const empty  = document.getElementById('emptyState');
   const result = document.getElementById('resultContent');
