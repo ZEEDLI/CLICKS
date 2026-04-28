@@ -1223,6 +1223,18 @@ function submitCalcOrder() {
 
   document.getElementById('cOrderNum').textContent = '#' + orderId;
   buildFinalChannels('cFinalChannels', orderId, msg);
+   fetch(CONFIG.sheetUrl, {
+  method: 'POST',
+  body: JSON.stringify({
+    orderId,
+    platform: currentOrderData.platform,
+    service:  currentOrderData.service,
+    qty:      currentOrderData.qty,
+    usd:      currentOrderData.usd,
+    dz:       currentOrderData.dz,
+    paiement: currentCalcPay
+  })
+}).catch(() => {});
   openModal('calcConfirmModal');
 }
 
