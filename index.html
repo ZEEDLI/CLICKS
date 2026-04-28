@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -1099,11 +1100,11 @@ footer .logo-f { font-family: 'Syne', sans-serif; font-weight: 800; color: var(-
 <script>
 /* ---- CONFIG ---- */
 const CONFIG = {
-  waNumber: '213XXXXXXXXX',   // ← Remplace par ton vrai numéro WhatsApp
+  waNumber: '213777712512',   // ← Numéro WhatsApp
   rateDZ: 260,                 // ← Taux USDT → DA
-  igUrl: 'https://instagram.com/zeedsmma',    // ← Ton Instagram
-  fbUrl: 'https://m.me/zeedsmma',            // ← Ton Messenger
-  email: 'contact@zeed.plus'                // ← Ton email
+  igUrl: 'https://ig.me/m/zeedsmma',          // ← DM direct Instagram
+  fbUrl: 'https://m.me/zeedsmma',             // ← Ton Messenger
+  email: 'contact@zeed.plus',                 // ← Ton email
   sheetUrl: 'https://script.google.com/macros/s/AKfycby5IvOBUEfS4jbLRWC31OY0IPUOaLOCWPldRQnhZM05F4MC5mw_SvSOxcJXPgh3RQDjyw/exec'
 };
 
@@ -1157,11 +1158,19 @@ let currentCalcPay  = '';
 let currentModalPay = '';
 let currentOrderData = {};
 
+/* ---- PLATFORM PLACEHOLDERS ---- */
+const platformPlaceholders = {
+  Facebook:  'https://www.facebook.com/votrepage',
+  Instagram: 'https://www.instagram.com/votrecompte',
+  TikTok:    'https://www.tiktok.com/@votrecompte',
+};
+
 function setPlatform(el, name) {
   document.querySelectorAll('.ptab').forEach(e => e.classList.remove('active'));
   el.classList.add('active');
   currentPlatform = name;
   updateServiceOptions(name);
+  document.getElementById('link').placeholder = platformPlaceholders[name];
   calcPrice();
 }
 
@@ -1225,6 +1234,7 @@ function submitCalcOrder() {
   buildFinalChannels('cFinalChannels', orderId, msg);
    fetch(CONFIG.sheetUrl, {
   method: 'POST',
+  mode: 'no-cors',
   body: JSON.stringify({
     orderId,
     platform: currentOrderData.platform,
@@ -1355,6 +1365,7 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
 /* ---- INIT ---- */
 document.addEventListener('DOMContentLoaded', () => {
   updateServiceOptions('Facebook');
+  document.getElementById('link').placeholder = platformPlaceholders['Facebook'];
 });
 </script>
 </body>
