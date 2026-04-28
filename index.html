@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -801,8 +802,6 @@ footer .logo-f { font-family: 'Syne', sans-serif; font-weight: 800; color: var(-
 <!-- ============================================================
      CALCULATOR
      ============================================================ -->
-     CALCULATOR
-     ============================================================ -->
 <section id="calculator">
   <div class="container">
     <div class="section-label">Services à la carte</div>
@@ -1118,6 +1117,39 @@ function toggleNav() {
   document.getElementById('navLinks').classList.toggle('open');
 }
 
+/* ---- PLATFORM PRICES ---- */
+const platformPrices = {
+  Facebook: [
+    { label: 'Followers',         price: 1.5 },
+    { label: 'Likes',             price: 1.2 },
+    { label: 'Partages / Shares', price: 1.8 },
+    { label: 'Vues',              price: 2.0 },
+    { label: 'Commentaires',      price: 3.0 },
+  ],
+  Instagram: [
+    { label: 'Followers',         price: 1.8 },
+    { label: 'Likes',             price: 1.0 },
+    { label: 'Partages / Shares', price: 2.0 },
+    { label: 'Vues (Reels)',      price: 2.5 },
+    { label: 'Commentaires',      price: 3.5 },
+  ],
+  TikTok: [
+    { label: 'Followers',         price: 2.0 },
+    { label: 'Likes',             price: 0.8 },
+    { label: 'Partages / Shares', price: 1.5 },
+    { label: 'Vues',              price: 1.2 },
+    { label: 'Commentaires',      price: 4.0 },
+  ],
+};
+
+function updateServiceOptions(platform) {
+  const select = document.getElementById('service');
+  const services = platformPrices[platform];
+  select.innerHTML = services.map(s =>
+    `<option value="${s.price}">${s.label} — ${s.price} USDT / 1000</option>`
+  ).join('');
+}
+
 /* ---- PLATFORM ---- */
 let currentPlatform = 'Facebook';
 let currentCalcPay  = '';
@@ -1128,6 +1160,7 @@ function setPlatform(el, name) {
   document.querySelectorAll('.ptab').forEach(e => e.classList.remove('active'));
   el.classList.add('active');
   currentPlatform = name;
+  updateServiceOptions(name);
   calcPrice();
 }
 
@@ -1301,67 +1334,7 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
   });
 });
 
-   // ✅ Prix par plateforme
-const platformPrices = {
-  Facebook: [
-    { label: "Followers",        price: 1.5 },
-    { label: "Likes",            price: 1.2 },
-    { label: "Partages / Shares",price: 1.8 },
-    { label: "Vues",             price: 2.0 },
-    { label: "Commentaires",     price: 3.0 },
-  ],
-  Instagram: [
-    { label: "Followers",        price: 1.8 },
-    { label: "Likes",            price: 1.0 },
-    { label: "Partages / Shares",price: 2.0 },
-    { label: "Vues (Reels)",     price: 2.5 },
-    { label: "Commentaires",     price: 3.5 },
-  ],
-  TikTok: [
-    { label: "Followers",        price: 2.0 },
-    { label: "Likes",            price: 0.8 },
-    { label: "Partages / Shares",price: 1.5 },
-    { label: "Vues",             price: 1.2 },
-    { label: "Commentaires",     price: 4.0 },
-  ],
-};
-
-let currentPlatform = "Facebook";
-
-function setPlatform(btn, platform) {
-  // Mettre à jour le bouton actif
-  document.querySelectorAll('.ptab').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-
-  currentPlatform = platform;
-
-  // ✅ Mettre à jour les options du select
-  updateServiceOptions(platform);
-  calcPrice();
-}
-
-function updateServiceOptions(platform) {
-  const select = document.getElementById('service');
-  const services = platformPrices[platform];
-
-  select.innerHTML = services.map(s =>
-    `<option value="${s.price}">${s.label} — ${s.price} USDT / 1000</option>`
-  ).join('');
-}
-
-function calcPrice() {
-  const price = parseFloat(document.getElementById('service').value);
-  const qty   = parseFloat(document.getElementById('qty').value) || 0;
-
-  const usdt = (price * qty / 1000).toFixed(2);
-  const dzd  = (usdt * 220).toFixed(0); // ← adaptez le taux de change
-
-  // Mettez à jour votre affichage ici, ex:
-  document.getElementById('result-usdt').textContent = usdt + ' USDT';
-  document.getElementById('result-dzd').textContent  = dzd  + ' DZD';
-}
-
-// ✅ Initialisation au chargement de la page
+/* ---- INIT ---- */
 document.addEventListener('DOMContentLoaded', () => {
   updateServiceOptions('Facebook');
 });
