@@ -1294,24 +1294,29 @@ function buildWAMsg(orderId, info) {
   return encodeURIComponent(lines.join('\n'));
 }
 
-function buildFinalChannels(containerId, orderId, waMsg) {
+function buildFinalChannels(containerId, orderId, msg) {
   const container = document.getElementById(containerId);
+  const plainMsg  = decodeURIComponent(msg); // message lisible
+
   container.innerHTML = `
-    <a href="https://wa.me/${CONFIG.waNumber}?text=${waMsg}" target="_blank" class="final-btn">
+    <a href="https://wa.me/${CONFIG.waNumber}?text=${msg}" target="_blank" class="final-btn">
       <div class="f-icon ch-wa">💬</div>
       <div><div style="font-weight:600;font-size:13px;">Continuer sur WhatsApp</div><div style="font-size:11px;color:var(--muted);">Réponse la plus rapide</div></div>
     </a>
-    <a href="${CONFIG.igUrl}" target="_blank" class="final-btn">
+    <a href="${CONFIG.igUrl}" target="_blank" class="final-btn" onclick="copyMsg(\`${plainMsg}\`)">
       <div class="f-icon ch-ig">📸</div>
-      <div><div style="font-weight:600;font-size:13px;">Instagram DM</div><div style="font-size:11px;color:var(--muted);">Envoie ton n° de commande</div></div>
+      <div><div style="font-weight:600;font-size:13px;">Instagram DM</div><div style="font-size:11px;color:var(--muted);">Message copié automatiquement ✓</div></div>
     </a>
-    <a href="${CONFIG.fbUrl}" target="_blank" class="final-btn">
+    <a href="${CONFIG.fbUrl}" target="_blank" class="final-btn" onclick="copyMsg(\`${plainMsg}\`)">
       <div class="f-icon ch-ms">✈</div>
-      <div><div style="font-weight:600;font-size:13px;">Messenger</div><div style="font-size:11px;color:var(--muted);">Via Facebook</div></div>
+      <div><div style="font-weight:600;font-size:13px;">Messenger</div><div style="font-size:11px;color:var(--muted);">Message copié automatiquement ✓</div></div>
     </a>
   `;
 }
 
+function copyMsg(text) {
+  navigator.clipboard.writeText(text).catch(() => {});
+}
 function openModal(id)  { document.getElementById(id).classList.add('open'); }
 function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 
