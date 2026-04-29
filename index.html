@@ -17,6 +17,24 @@
   --wa-number: '213777712512';   /* Ton numéro WhatsApp */
   --rate-dz: 260;                /* Taux USDT → DA */
 
+   .lang-btn {
+  background: transparent;
+  border: 1px solid var(--gold);
+  color: var(--gold);
+  padding: .35rem .8rem;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  transition: all .2s;
+}
+.lang-btn:hover { background: var(--gold); color: var(--dark); }
+
+[lang="ar"] { direction: rtl; text-align: right; }
+[lang="ar"] .nav-links { flex-direction: row-reverse; }
+[lang="ar"] .hero-btns { flex-direction: row-reverse; }
+[lang="ar"] .channel-btn:hover { transform: translateX(-4px); }
+
   /* Couleurs */
   --gold: #C9A84C;
   --gold2: #F0C96B;
@@ -689,6 +707,8 @@ footer .logo-f { font-family: 'Syne', sans-serif; font-weight: 800; color: var(-
     <a href="#packages" class="nav-cta">Commander →</a>
   </div>
   <button class="nav-toggle" onclick="toggleNav()" id="navToggle">☰</button>
+   <button class="lang-btn" onclick="toggleLang()" id="langBtn">عربي</button>
+
 </nav>
 
 <!-- ============================================================
@@ -1374,6 +1394,60 @@ document.addEventListener('DOMContentLoaded', () => {
   updateServiceOptions('Facebook');
   document.getElementById('link').placeholder = platformPlaceholders['Facebook'];
 });
+   const translations = {
+  fr: {
+    heroBadge: "Service actif en Algérie",
+    heroTitle: "Booste ta présence<br>sur les <span class='highlight'>réseaux sociaux</span>",
+    heroDesc: "Followers, likes, identité visuelle, gestion de pages — tout pour lancer ou faire grandir ton business en ligne.",
+    heroBtn1: "Voir les offres →",
+    heroBtn2: "Calculer le prix",
+    stat1: "Plateformes", stat2: "Followers livrés", stat3: "Délai de livraison", stat4: "Modes de paiement",
+    nav1: "Calculateur", nav2: "Comment ça marche", nav3: "Contact", nav4: "Commander →",
+  },
+  ar: {
+    heroBadge: "خدمة نشطة في الجزائر",
+    heroTitle: "عزّز حضورك<br>على <span class='highlight'>وسائل التواصل الاجتماعي</span>",
+    heroDesc: "متابعون، إعجابات، هوية بصرية، إدارة صفحات — كل ما تحتاجه لإطلاق أو تنمية عملك على الإنترنت.",
+    heroBtn1: "← عرض الباقات",
+    heroBtn2: "احسب السعر",
+    stat1: "منصات", stat2: "متابع تم توصيله", stat3: "مدة التوصيل", stat4: "طرق الدفع",
+    nav1: "الحاسبة", nav2: "كيف يعمل", nav3: "اتصل بنا", nav4: "← اطلب الآن",
+  }
+};
+
+let currentLang = 'fr';
+
+function toggleLang() {
+  currentLang = currentLang === 'fr' ? 'ar' : 'fr';
+  const t = translations[currentLang];
+  const btn = document.getElementById('langBtn');
+
+  document.documentElement.setAttribute('lang', currentLang);
+  btn.textContent = currentLang === 'fr' ? 'عربي' : 'FR';
+
+  // Hero
+  document.querySelector('.hero-badge').innerHTML = (currentLang === 'ar' ? '<span style="width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s infinite;display:inline-block;"></span> ' : '<span style="width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s infinite;display:inline-block;"></span> ') + t.heroBadge;
+  document.querySelector('.hero h1').innerHTML = t.heroTitle;
+  document.querySelector('.hero p').innerHTML = t.heroDesc;
+
+  const heroBtns = document.querySelectorAll('.hero-btns .btn');
+  heroBtns[0].innerHTML = t.heroBtn1;
+  heroBtns[1].innerHTML = t.heroBtn2;
+
+  // Stats
+  const statLabels = document.querySelectorAll('.stat-label');
+  statLabels[0].textContent = t.stat1;
+  statLabels[1].textContent = t.stat2;
+  statLabels[2].textContent = t.stat3;
+  statLabels[3].textContent = t.stat4;
+
+  // Nav links
+  const navLinks = document.querySelectorAll('.nav-links a:not(.nav-cta)');
+  navLinks[0].textContent = t.nav1;
+  navLinks[1].textContent = t.nav2;
+  navLinks[2].textContent = t.nav3;
+  document.querySelector('.nav-cta').textContent = t.nav4;
+}
 </script>
 </body>
 </html>
