@@ -737,11 +737,11 @@ footer .logo-f { font-family: 'Syne', sans-serif; font-weight: 800; color: var(-
       <div class="stat-label">Plateformes</div>
     </div>
     <div class="stat-item">
-      <div class="stat-num">10K+</div>
+      <div class="stat-num">1M+</div>
       <div class="stat-label">Followers livrés</div>
     </div>
     <div class="stat-item">
-      <div class="stat-num">24h</div>
+      <div class="stat-num">24h Max</div>
       <div class="stat-label">Délai de livraison</div>
     </div>
     <div class="stat-item">
@@ -765,13 +765,13 @@ footer .logo-f { font-family: 'Syne', sans-serif; font-weight: 800; color: var(-
     <div class="packages-grid">
 
       <!-- Pack Starter -->
-      <div class="pkg-card featured" onclick="openOrderModal('Starter Business', '10 000 DA', '~40 USDT')">
+      <div class="pkg-card featured" onclick="openOrderModal('Starter Business', '15 000 DA', '60 USDT')">
         <div class="pkg-badge">⭐ MEILLEUR CHOIX</div>
         <div class="pkg-icon">🚀</div>
         <div class="pkg-name">Starter Business</div>
         <div class="pkg-desc">Idéal pour lancer ton business</div>
-        <div class="pkg-price">10 000 <span>DA</span></div>
-        <div class="pkg-usd">≈ 40 USDT</div>
+        <div class="pkg-price">15 000 <span>DA</span></div>
+        <div class="pkg-usd">≈ 60 USDT</div>
         <ul class="pkg-list">
           <li>Identité visuelle complète (logo, couleurs)</li>
           <li>Page Facebook professionnelle créée</li>
@@ -785,36 +785,31 @@ footer .logo-f { font-family: 'Syne', sans-serif; font-weight: 800; color: var(-
       </div>
 
       <!-- Pack Croissance -->
-      <div class="pkg-card" onclick="openOrderModal('Pack Croissance', '19 000 DA', '~70 USDT')">
+      <div class="pkg-card" onclick="openOrderModal('Pack Croissance', '25 000 DA', '~100 USDT')">
         <div class="pkg-icon">📈</div>
         <div class="pkg-name">Pack Croissance</div>
         <div class="pkg-desc">Pour aller plus loin</div>
-        <div class="pkg-price">18 000 <span>DA</span></div>
-        <div class="pkg-usd">≈ 70 USDT</div>
+        <div class="pkg-price">25 000 <span>DA</span></div>
+        <div class="pkg-usd">≈ 100 USDT</div>
         <ul class="pkg-list">
           <li>Tout du pack Starter inclus</li>
           <li>25 000 followers par plateforme</li>
-          <li>Gestion réseaux 1 mois</li>
-          <li>5 publications créées et postées</li>
-          <li>Bio + highlights Instagram</li>
-          <li>Couverture Facebook personnalisée</li>
+       
         </ul>
         <button class="btn-pkg-outline">Commander →</button>
       </div>
 
       <!-- Pack Premium -->
-      <div class="pkg-card" onclick="openOrderModal('Pack Premium', '30 000 DA', '~115 USDT')">
+      <div class="pkg-card" onclick="openOrderModal('Pack Premium', '40 000 DA', '~160 USDT')">
         <div class="pkg-icon">💎</div>
         <div class="pkg-name">Pack Premium</div>
         <div class="pkg-desc">La solution complète</div>
-        <div class="pkg-price">30 000 <span>DA</span></div>
-        <div class="pkg-usd">≈ 115 USDT</div>
+        <div class="pkg-price">40 000 <span>DA</span></div>
+        <div class="pkg-usd">≈ 160 USDT</div>
         <ul class="pkg-list">
           <li>Tout du pack Croissance inclus</li>
           <li>50 000 followers par plateforme</li>
-          <li>Gestion réseaux 2 mois</li>
-          <li>Campagne Facebook Ads incluse</li>
-          <li>Rapport mensuel de performance</li>
+          <li>Création d'un site web vitrine</li>
           <li>Support prioritaire WhatsApp</li>
         </ul>
         <button class="btn-pkg-outline">Commander →</button>
@@ -871,7 +866,7 @@ footer .logo-f { font-family: 'Syne', sans-serif; font-weight: 800; color: var(-
             <div class="pay-card" onclick="selectPay(this,'flexy')">
               <div class="pay-icon">📱</div>
               <div class="pay-name">Flexy</div>
-              <div class="pay-note">+25% frais</div>
+              <div class="pay-note">+300DA frais</div>
             </div>
             <div class="pay-card" onclick="selectPay(this,'crypto')">
               <div class="pay-icon">₿</div>
@@ -1129,7 +1124,7 @@ const CONFIG = {
   waNumber: '213777712512',   // ← Numéro WhatsApp
   rateDZ: 260,                 // ← Taux USDT → DA
   igUrl: 'https://ig.me/m/zeedsmma',          // ← DM direct Instagram
-  fbUrl: 'https://m.me/zeedsmma?ref=w53674461',             // ← Ton Messenger
+  fbUrl: 'https://m.me/zeedsmma?ref=w53674461',  // ← Ton Messenger
   email: 'contact@zeed.plus',                 // ← Ton email
   sheetUrl: 'https://script.google.com/macros/s/AKfycby5IvOBUEfS4jbLRWC31OY0IPUOaLOCWPldRQnhZM05F4MC5mw_SvSOxcJXPgh3RQDjyw/exec'
 };
@@ -1148,25 +1143,26 @@ function toggleNav() {
 /* ---- PLATFORM PRICES ---- */
 const platformPrices = {
   Facebook: [
-    { label: 'Followers',         price: 1.5 },
-    { label: 'Likes',             price: 1.2 },
-    { label: 'Partages / Shares', price: 1.8 },
-    { label: 'Vues',              price: 2.0 },
-    { label: 'Commentaires',      price: 3.0 },
+    { label: 'Page Likes',         price: 1.5 },
+    { label: 'Followers',         price: 1.0 },
+    { label: 'Likes',             price: 1.0 },
+    { label: 'Partages / Shares', price: 2.5 },
+    { label: 'Vues Story',         price: 2.0 },
+    { label: 'Vues Vidéo',      price: 1.0 },
   ],
   Instagram: [
-    { label: 'Followers',         price: 1.8 },
+    { label: 'Followers',         price: 1.5 },
     { label: 'Likes',             price: 1.0 },
-    { label: 'Partages / Shares', price: 2.0 },
-    { label: 'Vues (Reels)',      price: 2.5 },
-    { label: 'Commentaires',      price: 3.5 },
+    { label: 'Saves/Shares ',     price: 1.0 },
+    { label: 'Vues (Reels)',      price: 1.0 },
+    { label: 'Vues (Story)',      price: 1.0 },
   ],
   TikTok: [
-    { label: 'Followers',         price: 2.0 },
-    { label: 'Likes',             price: 0.8 },
-    { label: 'Partages / Shares', price: 1.5 },
-    { label: 'Vues',              price: 1.2 },
-    { label: 'Commentaires',      price: 4.0 },
+    { label: 'Followers',         price: 3.0 },
+    { label: 'Likes',             price: 1.0 },
+    { label: 'Partages / Saves / Download',  price: 1.0 },
+    { label: 'Vues',              price: 1.0 },
+    { label: 'Live Views',      price: 4.0 },
   ],
 };
 
