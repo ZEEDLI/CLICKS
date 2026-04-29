@@ -1131,7 +1131,7 @@ const CONFIG = {
   igUrl: 'https://ig.me/m/zeedsmma',          // ← DM direct Instagram
   fbUrl: 'https://m.me/zeedsmma',             // ← Ton Messenger
   email: 'contact@zeed.plus',                 // ← Ton email
-  sheetUrl: 'https://script.google.com/macros/s/AKfycby1smVjID-O24_PoF-BO5rCtq-ccC991eqUukYNZNrWXYaxCceBjw47pR4ULCiLpws17A/exec'
+  sheetUrl: 'https://script.google.com/macros/s/AKfycby5IvOBUEfS4jbLRWC31OY0IPUOaLOCWPldRQnhZM05F4MC5mw_SvSOxcJXPgh3RQDjyw/exec'
 };
 
 const PAY_INFO = {
@@ -1314,22 +1314,6 @@ function mNext2() {
   });
   document.getElementById('mOrderNum').textContent = '#' + orderId;
   buildFinalChannels('mFinalChannels', orderId, msg);
-   fetch(CONFIG.sheetUrl, {
-  method: 'POST',
-  mode: 'no-cors',
-  body: JSON.stringify({
-    orderId,
-    platform: 'Pack',
-    service: modalPackData.pack,
-    qty: '',
-    usd: modalPackData.usd,
-    dz: modalPackData.price,
-    paiement: currentModalPay,
-    email: currentOrderData.email,
-    tel: currentOrderData.phone,
-    name: currentOrderData.name
-  })
-}).catch(() => {});
   switchStep('mstep2', 'mstep3');
   document.getElementById('mp3').classList.add('done');
 }
