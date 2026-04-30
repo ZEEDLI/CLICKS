@@ -1410,6 +1410,15 @@ document.addEventListener('DOMContentLoaded', () => {
     heroBtn2: "Calculer le prix",
     stat1: "Plateformes", stat2: "Followers livrés", stat3: "Délai de livraison", stat4: "Modes de paiement",
     nav1: "Calculateur", nav2: "Comment ça marche", nav3: "Contact", nav4: "Commander →",
+    howLabel: "Processus",
+howTitle: "Comment ça marche ?",
+howDesc: "Simple, rapide et sécurisé.",
+step1Title: "Choisir ton service",
+step1Desc: "Utilise le calculateur pour les commandes simples, ou choisis un pack si tu veux lancer ton business sur les réseaux sociaux.",
+step2Title: "Remplis tes informations",
+step2Desc: "Entre le lien de ton compte, post ou page ciblé. Mentionne ton email pour le suivi et pour être informé de nos offres futures.",
+step3Title: "Procède au paiement",
+step3Desc: "Envoie ta commande via WhatsApp, Instagram ou Messenger. Livraison en 24h — sinon remboursement garanti.",
   },
   ar: {
     heroBadge: "خدمة نشطة في الجزائر",
@@ -1419,6 +1428,15 @@ document.addEventListener('DOMContentLoaded', () => {
     heroBtn2: "احسب السعر",
     stat1: "منصات", stat2: "متابع تم توصيله", stat3: "مدة التوصيل", stat4: "طرق الدفع",
     nav1: "الحاسبة", nav2: "كيف يعمل", nav3: "اتصل بنا", nav4: "← اطلب الآن",
+    howLabel: "العملية",
+howTitle: "كيف يعمل ؟",
+howDesc: "بسيط، سريع وآمن.",
+step1Title: "اختر خدمتك",
+step1Desc: "استخدم الحاسبة للطلبات البسيطة، أو اختر باقة إذا أردت إطلاق نشاطك التجاري على وسائل التواصل الاجتماعي.",
+step2Title: "أدخل معلوماتك",
+step2Desc: "أدخل رابط حسابك أو منشورك أو صفحتك. اذكر بريدك الإلكتروني للمتابعة وللاطلاع على عروضنا المستقبلية.",
+step3Title: "أتمّ الدفع",
+step3Desc: "أرسل طلبك عبر واتساب أو إنستغرام أو ماسنجر. توصيل خلال 24 ساعة — أو استرداد كامل للمبلغ.",
   }
 };
 
@@ -1454,6 +1472,18 @@ function toggleLang() {
   navLinks[1].textContent = t.nav2;
   navLinks[2].textContent = t.nav3;
   document.querySelector('.nav-cta').textContent = t.nav4;
+  // How it works
+  document.querySelector('#how .section-label').textContent = t.howLabel;
+  document.querySelector('#how .section-title').textContent = t.howTitle;
+  document.querySelector('#how .section-desc').textContent = t.howDesc;
+
+  const steps = document.querySelectorAll('#how .step-card');
+  steps[0].querySelector('.step-title').textContent = t.step1Title;
+  steps[0].querySelector('.step-desc').textContent = t.step1Desc;
+  steps[1].querySelector('.step-title').textContent = t.step2Title;
+  steps[1].querySelector('.step-desc').textContent = t.step2Desc;
+  steps[2].querySelector('.step-title').textContent = t.step3Title;
+  steps[2].querySelector('.step-desc').textContent = t.step3Desc;
 }
 </script>
 </body>
