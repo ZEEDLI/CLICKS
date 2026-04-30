@@ -9,7 +9,23 @@
 <meta name="description" content="Services de croissance sur les réseaux sociaux : followers, likes, identité visuelle. Facebook, Instagram, TikTok.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
-<style>
+.followers-notice {
+  display: none;
+  gap: .75rem;
+  background: rgba(201,168,76,.08);
+  border: 1px solid rgba(201,168,76,.3);
+  border-left: 3px solid var(--gold);
+  border-radius: 8px;
+  padding: .9rem 1rem;
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: .75rem;
+  line-height: 1.6;
+}
+.followers-notice.visible { display: flex; }
+.followers-notice span { font-size: 1.2rem; flex-shrink: 0; }
+.followers-notice strong { color: var(--text); }
+   <style>
 /* ============================================================
    CONFIG — Modifie ici tes infos
    ============================================================ */
@@ -809,6 +825,13 @@ footer .logo-f { font-family: 'Syne', sans-serif; font-weight: 800; color: var(-
         <div>
           <select class="field-input" id="service" onchange="calcPrice()">
           </select>
+             <div class="followers-notice" id="followersNotice">
+    <span>⚠️</span>
+    <div>
+      <strong>À propos des Followers</strong>
+      <p>Les followers peuvent diminuer naturellement. Nous offrons <strong>1 rechargement gratuit par semaine pendant 1 mois</strong>. Envoyez simplement votre numéro de commande via WhatsApp.</p>
+    </div>
+  </div>
         </div>
         <div>
           <label class="field-label" for="qty">Quantité</label>
@@ -1188,6 +1211,8 @@ function calcPrice() {
   if (!sel || sel.options.length === 0) return;
   const rate    = parseFloat(sel.value);
   const svc     = sel.options[sel.selectedIndex].text.split('—')[0].trim();
+  const notice = document.getElementById('followersNotice');
+notice.classList.toggle('visible', svc.trim() === 'Followers');
 
   const empty  = document.getElementById('emptyState');
   const result = document.getElementById('resultContent');
