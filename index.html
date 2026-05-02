@@ -1280,19 +1280,17 @@ function selectPay(el, type) {
 }
 
 function submitCalcOrder() {
-  const link  = document.getElementById('link').value.trim();
-  const email = document.getElementById('calcEmail').value.trim();
-  if (!link || !email) { alert('Remplis le lien et ton email svp.'); return; }
+  const link = document.getElementById('link').value.trim();
+  if (!link) { alert('Remplis le lien svp.'); return; }
   if (!currentCalcPay) { alert('Choisis un mode de paiement.'); return; }
 
   const orderId = genOrderId();
-  const msg = buildWAMsg(orderId, {
-    pack: currentOrderData.service + ' (' + currentOrderData.qty.toLocaleString() + ')',
-    prix: currentOrderData.usd + ' USDT / ' + finalDz + ' DA' + (flexyFee ? ' (+300 DA frais Flexy)' : ''),
-    paiement: currentCalcPay,
-    lien: link,
-    email
-  });
+const msg = buildWAMsg(orderId, {
+  pack: currentOrderData.service + ' (' + currentOrderData.qty.toLocaleString() + ')',
+  prix: currentOrderData.usd + ' USDT / ' + finalDz + ' DA' + (flexyFee ? ' (+300 DA frais Flexy)' : ''),
+  paiement: currentCalcPay,
+  lien: link
+});
 
   document.getElementById('cOrderNum').textContent = '#' + orderId;
   buildFinalChannels('cFinalChannels', orderId, msg);
@@ -1344,10 +1342,9 @@ function mNext2() {
   const msg = buildWAMsg(orderId, {
     pack: modalPackData.pack,
     prix: modalPackData.price + ' / ' + modalPackData.usd,
-    paiement: currentModalPay,
-    email: currentOrderData.email,
-    tel: currentOrderData.phone
+    paiement: currentModalPay
   });
+  
   document.getElementById('mOrderNum').textContent = '#' + orderId;
   buildFinalChannels('mFinalChannels', orderId, msg);
   switchStep('mstep2', 'mstep3');
