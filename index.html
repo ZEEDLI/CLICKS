@@ -64,6 +64,8 @@
 [lang="ar"] .nav-links { flex-direction: row-reverse; }
 [lang="ar"] .hero-btns { flex-direction: row-reverse; }
 [lang="ar"] .channel-btn:hover { transform: translateX(-4px); }
+[lang="ar"] .pkg-price { direction: ltr; display: inline-block; }
+[lang="ar"] .pkg-usd { direction: ltr; }
 
 
 /* ============================================================
@@ -1460,6 +1462,12 @@ calcLink: "Lien de votre profil / post / page",
 calcPay: "Mode de paiement",
 calcBtn: "Confirmer et continuer →",
 emptyState: "Entrez une quantité pour voir le prix",
+    packLabel: "Packs complets",
+packTitle: "Lance ton business<br>dès aujourd'hui",
+packDesc: "Des packs tout-en-un pour démarrer ta présence sur toutes les plateformes.",
+contactLabel: "Nous contacter",
+contactTitle: "Une question ?<br>On répond vite.",
+contactDesc: "Choisissez le canal qui vous convient. Réponse garantie en moins d'1 heure.",
   },
   ar: {
     heroBadge: "خدمة نشطة في الجزائر",
@@ -1487,6 +1495,12 @@ calcLink: "رابط حسابك / منشورك / صفحتك",
 calcPay: "طريقة الدفع",
 calcBtn: "تأكيد والمتابعة ←",
 emptyState: "أدخل كمية لرؤية السعر",
+    packLabel: "الباقات الكاملة",
+packTitle: "أطلق عملك<br>اليوم",
+packDesc: "باقات شاملة لإطلاق حضورك على جميع المنصات.",
+contactLabel: "اتصل بنا",
+contactTitle: "لديك سؤال ؟<br>نرد بسرعة.",
+contactDesc: "اختر القناة التي تناسبك. رد مضمون في أقل من ساعة.",
   }
 };
 
@@ -1539,6 +1553,13 @@ document.querySelector('#calculator .section-label').textContent = t.calcLabel;
 document.querySelector('#calculator .section-title').innerHTML = t.calcTitle;
 document.querySelector('#calculator .section-desc').textContent = t.calcDesc;
 document.getElementById('emptyState').querySelector('p').textContent = t.emptyState;
+
+  document.querySelector('#packages .section-label').textContent = t.packLabel;
+document.querySelector('#packages .section-title').innerHTML = t.packTitle;
+document.querySelector('#packages .section-desc').textContent = t.packDesc;
+document.querySelector('#contact .section-label').textContent = t.contactLabel;
+document.querySelector('#contact .section-title').innerHTML = t.contactTitle;
+document.querySelector('#contact .section-desc').textContent = t.contactDesc;
 }
 </script>
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js/v8c78df7c7c0f484497ecbca7046644da1771523124516" integrity="sha512-8DS7rgIrAmghBFwoOTujcf6D9rXvH8xm8JQ1Ja01h9QX8EzXldiszufYa4IFfKdLUKTTrnSFXLDkUEOTrZQ8Qg==" data-cf-beacon='{"version":"2024.11.0","token":"6240f5c7e6c04dd386972071a807d7d5","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
