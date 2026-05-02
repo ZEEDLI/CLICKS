@@ -886,10 +886,15 @@ footer .logo-f { font-family: 'Syne', sans-serif; font-weight: 800; color: var(-
           <div class="result-row"><span class="k">Plateforme</span><span class="v" id="r-platform">—</span></div>
           <div class="result-row"><span class="k">Service</span><span class="v" id="r-service">—</span></div>
           <div class="result-row"><span class="k">Quantité</span><span class="v" id="r-qty">—</span></div>
-         <div class="price-highlight">
+        <div class="price-highlight">
   <div class="price-dz" style="margin-bottom:4px;font-size:11px;color:var(--muted);">Prix estimé</div>
-  <div id="discountBadge" style="display:none; background:rgba(201,168,76,0.15); color:#C9A84C; border:1px solid rgba(201,168,76,0.4); border-radius:8px; padding:5px 12px; font-size:12px; font-weight:500; text-align:center; margin-bottom:8px;"></div>
-  <div class="price-big" id="r-dz">0 DA</div>
+  
+  <div id="discountBadge" style="display:none; margin-bottom:8px;">
+    <div id="oldPrice" style="text-decoration:line-through; color:#e05555; font-size:1.3rem; font-weight:600;"></div>
+    <div style="font-size:11px; color:#4caf50; margin:2px 0;">-<span id="discountPct"></span>% appliqué</div>
+  </div>
+
+  <div class="price-big" id="r-dz"></div>
   <div class="price-dz" id="r-usdt">0.00 USDT</div>
 </div>
           <div class="result-row"><span class="k">Taux utilisé</span><span class="v" id="r-rate">1 USDT = 260 DA</span></div>
@@ -1241,16 +1246,19 @@ function calcPrice() {
     document.getElementById('r-rate').textContent     = '1 USDT = ' + CONFIG.rateDZ + ' DA';
 
     // Affiche le badge de réduction si applicable
-    const discountBadge = document.getElementById('discountBadge');
-    if (discountBadge) {
-      if (discount > 0) {
-         discountBadge.textContent = '-' + (discount * 100) + '% appliqué 🎉';
-         discountBadge.style.display = 'block';
-      } else {
-        discountBadge.style.display = 'none';
-      }
-    }
-
+   const discountBadge = document.getElementById('discountBadge');
+if (discountBadge) {
+  if (discount > 0) {
+    const dzBase = Math.round(usdBase * CONFIG.rateDZ);
+    document.getElementById('oldPrice').textContent = dzBase.toLocaleString('fr-DZ') + ' DA';
+    document.getElementById('discountPct').textContent = (discount * 100);
+    document.getElementById('r-dz').style.color = '#4caf50';
+    discountBadge.style.display = 'block';
+  } else {
+    document.getElementById('r-dz').style.color = 'var(--gold)';
+    discountBadge.style.display = 'none';
+  }
+}
     empty.style.display   = 'none';
     result.style.display  = 'block';
     result.scrollIntoView({ behavior: 'smooth', block: 'center' });
