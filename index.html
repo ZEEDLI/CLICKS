@@ -1212,32 +1212,55 @@ function calcPrice() {
   if (!sel || sel.options.length === 0) return;
   const rate    = parseFloat(sel.value);
   const svc     = sel.options[sel.selectedIndex].text.split('—')[0].trim();
-  const notice = document.getElementById('followersNotice');
-notice.classList.toggle('visible', svc.trim() === 'Followers');
-
-  const empty  = document.getElementById('emptyState');
-  const result = document.getElementById('resultContent');
+  const notice  = document.getElementById('followersNotice');
+  notice.classList.toggle('visible', svc.trim() === 'Followers');
+  const empty      = document.getElementById('emptyState');
+  const result     = document.getElementById('resultContent');
   const paySection = document.getElementById('paySection');
 
-  if (qty >= 100) {
-    const usd = qty / 1000 * rate;
-    const dz  = Math.round(usd * CONFIG.rateDZ);
+  // Grille de réductions
+  function getDiscount(qty) {
+    if (qty >= 50000) return 0.15;
+    if (qty >= 10000) return 0.10;
+    if (qty >= 2000)  return 0.05;
+    return 0;
+  }
+
+  if (qty >= 500) {
+    const discount    = getDiscount(qty);
+    const usdBase     = qty / 1000 * rate;
+    const usd         = usdBase * (1 - discount);
+    const dz          = Math.round(usd * CONFIG.rateDZ);
+
     document.getElementById('r-platform').textContent = currentPlatform;
     document.getElementById('r-service').textContent  = svc;
     document.getElementById('r-qty').textContent      = qty.toLocaleString('fr-DZ');
     document.getElementById('r-usdt').textContent     = usd.toFixed(2) + ' USDT';
     document.getElementById('r-dz').textContent       = dz.toLocaleString('fr-DZ') + ' DA';
     document.getElementById('r-rate').textContent     = '1 USDT = ' + CONFIG.rateDZ + ' DA';
-    empty.style.display  = 'none';
-    result.style.display = 'block';
+
+    // Affiche le badge de réduction si applicable
+    const discountBadge = document.getElementById('discountBadge');
+    if (discountBadge) {
+      if (discount > 0) {
+        discountBadge.textContent = '-' + (discount * 100) + '% appliqué 🎉';
+        discountBadge.style.display = 'block';
+      } else {
+        discountBadge.style.display = 'none';
+      }
+    }
+
+    empty.style.display   = 'none';
+    result.style.display  = 'block';
     result.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    paySection.style.display = 'flex';
+    paySection.style.display       = 'flex';
     paySection.style.flexDirection = 'column';
-    paySection.style.gap = '1rem';
+    paySection.style.gap           = '1rem';
     currentOrderData = { qty, usd: usd.toFixed(2), dz, platform: currentPlatform, service: svc };
+
   } else {
-    empty.style.display  = 'block';
-    result.style.display = 'none';
+    empty.style.display   = 'block';
+    result.style.display  = 'none';
     paySection.style.display = 'none';
   }
 }
