@@ -888,6 +888,7 @@ footer .logo-f { font-family: 'Syne', sans-serif; font-weight: 800; color: var(-
           <div class="result-row"><span class="k">Quantité</span><span class="v" id="r-qty">—</span></div>
          <div class="price-highlight">
   <div class="price-dz" style="margin-bottom:4px;font-size:11px;color:var(--muted);">Prix estimé</div>
+  <div id="discountBadge" style="display:none; background:rgba(201,168,76,0.15); color:#C9A84C; border:1px solid rgba(201,168,76,0.4); border-radius:8px; padding:5px 12px; font-size:12px; font-weight:500; text-align:center; margin-bottom:8px;"></div>
   <div class="price-big" id="r-dz">0 DA</div>
   <div class="price-dz" id="r-usdt">0.00 USDT</div>
 </div>
@@ -1243,8 +1244,8 @@ function calcPrice() {
     const discountBadge = document.getElementById('discountBadge');
     if (discountBadge) {
       if (discount > 0) {
-        discountBadge.textContent = '-' + (discount * 100) + '% appliqué 🎉';
-        discountBadge.style.display = 'block';
+         discountBadge.textContent = '-' + (discount * 100) + '% appliqué 🎉';
+         discountBadge.style.display = 'block';
       } else {
         discountBadge.style.display = 'none';
       }
