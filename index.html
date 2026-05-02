@@ -1230,6 +1230,7 @@ notice.classList.toggle('visible', svc.trim() === 'Followers');
     document.getElementById('r-rate').textContent     = '1 USDT = ' + CONFIG.rateDZ + ' DA';
     empty.style.display  = 'none';
     result.style.display = 'block';
+    result.scrollIntoView({ behavior: 'smooth', block: 'center' });
     paySection.style.display = 'flex';
     paySection.style.flexDirection = 'column';
     paySection.style.gap = '1rem';
