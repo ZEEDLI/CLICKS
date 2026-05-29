@@ -1413,6 +1413,16 @@ function copyMsg(text) {
 function openModal(id)  { document.getElementById(id).classList.add('open'); }
 function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 
+/* ---- ANTI-INSPECT ---- */
+document.addEventListener('keydown', function(e) {
+  if (
+    e.keyCode === 123 ||
+    (e.ctrlKey && e.shiftKey && [73,74,67].includes(e.keyCode)) ||
+    (e.ctrlKey && e.keyCode === 85)
+  ) { e.preventDefault(); return false; }
+});
+document.addEventListener('contextmenu', function(e) { e.preventDefault(); return false; });
+
 /* Close modal on overlay click */
 document.querySelectorAll('.overlay').forEach(el => {
   el.addEventListener('click', function(e) {
