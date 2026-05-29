@@ -3,6 +3,8 @@
 
 
 
+
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -1290,10 +1292,12 @@ function selectPay(el, type) {
 }
 
 function submitCalcOrder() {
-  const link  = document.getElementById('link').value.trim();
-  const email = document.getElementById('calcEmail').value.trim();
-  if (!link || !email) { alert('Remplis le lien et ton email svp.'); return; }
+  const link = document.getElementById('link').value.trim();
+  if (!link) { alert('Remplis le lien svp.'); return; }
   if (!currentCalcPay) { alert('Choisissez un mode de paiement.'); return; }
+
+  const flexyFee = currentCalcPay === 'flexy';
+  const finalDz  = currentOrderData.dz + (flexyFee ? 300 : 0);
 
   const orderId = genOrderId();
   const msg = buildWAMsg(orderId, {
@@ -1301,7 +1305,6 @@ function submitCalcOrder() {
     prix: currentOrderData.usd + ' USDT / ' + finalDz + ' DA' + (flexyFee ? ' (+300 DA frais Flexy)' : ''),
     paiement: currentCalcPay,
     lien: link,
-    email
   });
 
   document.getElementById('cOrderNum').textContent = '#' + orderId;
@@ -1569,5 +1572,6 @@ document.querySelector('#contact .section-desc').textContent = t.contactDesc;
 }
 </script>
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js/v8c78df7c7c0f484497ecbca7046644da1771523124516" integrity="sha512-8DS7rgIrAmghBFwoOTujcf6D9rXvH8xm8JQ1Ja01h9QX8EzXldiszufYa4IFfKdLUKTTrnSFXLDkUEOTrZQ8Qg==" data-cf-beacon='{"version":"2024.11.0","token":"6240f5c7e6c04dd386972071a807d7d5","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v833ccba57c9e4d2798f2e76cebdd09a11778172276447" integrity="sha512-57MDmcccJXYtNnH+ZiBwzC4jb2rvgVCEokYN+L/nLlmO8rfYT/gIpW2A569iJ/3b+0UEasghjuZH/ma3wIs/EQ==" data-cf-beacon='{"version":"2024.11.0","token":"6240f5c7e6c04dd386972071a807d7d5","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 </body>
 </html>
