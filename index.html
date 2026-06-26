@@ -1342,6 +1342,7 @@ async function submitCalcOrder() {
         })
       });
       const data = await res.json();
+      alert(JSON.stringify(data));
       if (data.url) {
         window.location.href = data.url;
       } else {
