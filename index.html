@@ -1345,7 +1345,7 @@ async function submitCalcOrder() {
       if (data.url) {
         window.location.href = data.url;
       } else {
-        alert('Erreur paiement CIB. Réessayez.');
+        alert('Erreur: ' + JSON.stringify(data));
         btn.innerHTML = 'Confirmer et continuer →';
         btn.disabled = false;
       }
