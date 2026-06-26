@@ -1341,7 +1341,7 @@ async function submitCalcOrder() {
       });
       const data = await res.json();
       if (data.url) {
-        window.location.href = data.url;
+        window.open(data.url, '_blank');
       } else {
         alert('Erreur: ' + JSON.stringify(data));
         btn.innerHTML = 'Confirmer et continuer →';
