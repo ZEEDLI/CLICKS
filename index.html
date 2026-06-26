@@ -1307,14 +1307,12 @@ async function submitCalcOrder() {
   if (!link) { alert('Remplis le lien svp.'); return; }
   if (!currentCalcPay) { alert('Choisissez un mode de paiement.'); return; }
 
-  // ── CIB: call Worker /invoice → redirect to SlickPay ──
   if (currentCalcPay === 'cib') {
     const btn = document.querySelector('#paySection .btn-primary');
     btn.innerHTML = '⏳ Redirection...';
     btn.disabled = true;
     try {
       const orderId = genOrderId();
-      // Log to sheet first
       fetch('https://small-butterfly-fc0c.zeedsmma.workers.dev', {
         method: 'POST',
         mode: 'no-cors',
@@ -1329,7 +1327,7 @@ async function submitCalcOrder() {
           lien:     link
         })
       }).catch(() => {});
-      // Create SlickPay invoice
+
       const res = await fetch('https://small-butterfly-fc0c.zeedsmma.workers.dev/invoice', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -1342,7 +1340,6 @@ async function submitCalcOrder() {
         })
       });
       const data = await res.json();
-      alert(JSON.stringify(data));
       if (data.url) {
         window.location.href = data.url;
       } else {
@@ -1358,7 +1355,6 @@ async function submitCalcOrder() {
     }
     return;
   }
-
   // ── Flexy / Crypto: existing flow ──
   const flexyFee = currentCalcPay === 'flexy';
   const finalDz  = currentOrderData.dz + (flexyFee ? 300 : 0);
