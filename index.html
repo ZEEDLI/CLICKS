@@ -864,11 +864,11 @@ footer .logo-f { font-family: 'Syne', sans-serif; font-weight: 800; color: var(-
         <div id="paySection" style="display:none;">
           <span class="field-label">Mode de paiement</span>
           <div class="pay-methods">
-            <div class="pay-card" onclick="selectPay(this,'baridi')">
-              <div class="pay-icon">🏦</div>
-              <div class="pay-name">Baridi / CCP</div>
-              <div class="pay-note">Virement + reçu</div>
-            </div>
+           <div class="pay-card" onclick="selectPay(this,'cib')">
+  <div class="pay-icon">💳</div>
+  <div class="pay-name">CIB</div>
+  <div class="pay-note">Carte bancaire</div>
+</div>
             <div class="pay-card" onclick="selectPay(this,'flexy')">
               <div class="pay-icon">📱</div>
               <div class="pay-name">Flexy</div>
@@ -1108,7 +1108,7 @@ footer .logo-f { font-family: 'Syne', sans-serif; font-weight: 800; color: var(-
     <div class="modal-step" id="mstep2">
       <p style="font-size:13px;color:var(--muted);margin-bottom:1rem;">Choisis ton mode de paiement :</p>
       <div class="pay-methods">
-        <div class="pay-card" onclick="selectModalPay(this,'baridi')"><div class="pay-icon">🏦</div><div class="pay-name">Baridi / CCP</div><div class="pay-note">Virement + reçu</div></div>
+        <div class="pay-card" onclick="selectModalPay(this,'CIB')"><div class="pay-icon">🏦</div><div class="pay-name">Baridi / CCP</div><div class="pay-note">Virement + reçu</div></div>
         <div class="pay-card" onclick="selectModalPay(this,'flexy')"><div class="pay-icon">📱</div><div class="pay-name">Flexy</div><div class="pay-note">+300 DA frais</div></div>
         <div class="pay-card" onclick="selectModalPay(this,'crypto')"><div class="pay-icon">₿</div><div class="pay-name">USDT</div><div class="pay-note">Binance/Redotpay</div></div>
       </div>
@@ -1164,7 +1164,7 @@ const CONFIG = {
 };
 
 const PAY_INFO = {
-  baridi: '<strong>Baridi / CCP :</strong> Les coordonnées du compte vous seront envoyées après confirmation. Faites le virement et envoyez le reçu scanné ou en photo.',
+  cib:    '<strong>CIB (Carte Interbancaire) :</strong> Paiement sécurisé par carte bancaire via SATIM. Vous serez redirigé vers la page de paiement officielle.',
   flexy:  '<strong>Flexy :</strong> Recharge sur notre numéro Flexy. Un supplément de +300 DA s\'applique automatiquement.',
   crypto: '<strong>USDT (TRC20) :</strong> Adresse wallet envoyée après confirmation. Compatible RedotPay et Binance Pay.'
 };
@@ -1302,37 +1302,87 @@ function selectPay(el, type) {
   note.style.display = 'block';
 }
 
-function submitCalcOrder() {
+async function submitCalcOrder() {
   const link = document.getElementById('link').value.trim();
   if (!link) { alert('Remplis le lien svp.'); return; }
   if (!currentCalcPay) { alert('Choisissez un mode de paiement.'); return; }
 
+  // ── CIB: call Worker /invoice → redirect to SlickPay ──
+  if (currentCalcPay === 'cib') {
+    const btn = document.querySelector('#paySection .btn-primary');
+    btn.innerHTML = '⏳ Redirection...';
+    btn.disabled = true;
+    try {
+      const orderId = genOrderId();
+      // Log to sheet first
+      fetch('https://small-butterfly-fc0c.zeedsmma.workers.dev', {
+        method: 'POST',
+        mode: 'no-cors',
+        body: JSON.stringify({
+          orderId,
+          platform: currentOrderData.platform,
+          service:  currentOrderData.service,
+          qty:      currentOrderData.qty,
+          usd:      currentOrderData.usd,
+          dz:       currentOrderData.dz,
+          paiement: 'cib',
+          lien:     link
+        })
+      }).catch(() => {});
+      // Create SlickPay invoice
+      const res = await fetch('https://small-butterfly-fc0c.zeedsmma.workers.dev/invoice', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          amount: currentOrderData.dz,
+          name:   orderId,
+          phone:  '',
+          email:  '',
+          orderId
+        })
+      });
+      const data = await res.json();
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        alert('Erreur paiement CIB. Réessayez.');
+        btn.innerHTML = 'Confirmer et continuer →';
+        btn.disabled = false;
+      }
+    } catch(e) {
+      alert('Erreur réseau. Réessayez.');
+      const btn2 = document.querySelector('#paySection .btn-primary');
+      btn2.innerHTML = 'Confirmer et continuer →';
+      btn2.disabled = false;
+    }
+    return;
+  }
+
+  // ── Flexy / Crypto: existing flow ──
   const flexyFee = currentCalcPay === 'flexy';
   const finalDz  = currentOrderData.dz + (flexyFee ? 300 : 0);
-
   const orderId = genOrderId();
   const msg = buildWAMsg(orderId, {
-    pack: currentOrderData.service + ' (' + currentOrderData.qty.toLocaleString() + ')',
-    prix: currentOrderData.usd + ' USDT / ' + finalDz + ' DA' + (flexyFee ? ' (+300 DA frais Flexy)' : ''),
+    pack:     currentOrderData.service + ' (' + currentOrderData.qty.toLocaleString() + ')',
+    prix:     currentOrderData.usd + ' USDT / ' + finalDz + ' DA' + (flexyFee ? ' (+300 DA frais Flexy)' : ''),
     paiement: currentCalcPay,
-    lien: link,
+    lien:     link,
   });
-
   document.getElementById('cOrderNum').textContent = '#' + orderId;
   buildFinalChannels('cFinalChannels', orderId, msg);
-   fetch(CONFIG.sheetUrl, {
-  method: 'POST',
-  mode: 'no-cors',
-  body: JSON.stringify({
-    orderId,
-    platform: currentOrderData.platform,
-    service:  currentOrderData.service,
-    qty:      currentOrderData.qty,
-    usd:      currentOrderData.usd,
-    dz:       currentOrderData.dz,
-    paiement: currentCalcPay
-  })
-}).catch(() => {});
+  fetch('https://small-butterfly-fc0c.zeedsmma.workers.dev', {
+    method: 'POST',
+    mode: 'no-cors',
+    body: JSON.stringify({
+      orderId,
+      platform: currentOrderData.platform,
+      service:  currentOrderData.service,
+      qty:      currentOrderData.qty,
+      usd:      currentOrderData.usd,
+      dz:       currentOrderData.dz,
+      paiement: currentCalcPay
+    })
+  }).catch(() => {});
   openModal('calcConfirmModal');
 }
 
