@@ -1116,6 +1116,16 @@ footer .logo-f { font-family: 'Syne', sans-serif; font-weight: 800; color: var(-
       <button class="btn btn-primary" style="width:100%;justify-content:center;margin-top:1.25rem;" onclick="mNext2()">Valider la commande →</button>
     </div>
 
+<!-- Step 2.5 : Flexy Unavailable -->
+<div class="modal-step" id="mstep2-flexy">
+  <div style="text-align:center;padding:2rem 0;">
+    <div style="font-size:3rem;margin-bottom:1rem;">❌</div>
+    <p style="font-size:16px;font-weight:600;color:var(--text);margin-bottom:.5rem;">Service temporairement indisponible</p>
+    <p style="font-size:13px;color:var(--muted);line-height:1.6;">Flexy est actuellement en maintenance.<br>Choisissez un autre mode de paiement.</p>
+  </div>
+  <button class="btn btn-secondary" style="width:100%;justify-content:center;" onclick="backToPayment()">← Retour aux paiements</button>
+</div>
+
     <!-- Step 3 : Confirmation -->
     <div class="modal-step" id="mstep3">
       <div style="text-align:center;padding:.5rem 0 1rem;">
@@ -1411,6 +1421,14 @@ function mNext1() {
 
 function mNext2() {
   if (!currentModalPay) { alert('Choisissez un mode de paiement.'); return; }
+  
+  // ✅ Check if Flexy is selected
+  if (currentModalPay === 'flexy') {
+    switchStep('mstep2', 'mstep2-flexy');
+    return;
+  }
+  
+  // For CIB and Crypto (we'll handle these next)
   const orderId = genOrderId();
   const msg = buildWAMsg(orderId, {
     pack: modalPackData.pack,
@@ -1638,6 +1656,14 @@ document.querySelector('#contact .section-label').textContent = t.contactLabel;
 document.querySelector('#contact .section-title').innerHTML = t.contactTitle;
 document.querySelector('#contact .section-desc').textContent = t.contactDesc;
 }
+
+  function backToPayment() {
+  switchStep('mstep2-flexy', 'mstep2');
+  // Reset payment selection
+  document.querySelectorAll('#mstep2 .pay-card').forEach(e => e.classList.remove('selected'));
+  currentModalPay = '';
+  document.getElementById('mPayNote').style.display = 'none';
+} 
 </script>
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js/v8c78df7c7c0f484497ecbca7046644da1771523124516" integrity="sha512-8DS7rgIrAmghBFwoOTujcf6D9rXvH8xm8JQ1Ja01h9QX8EzXldiszufYa4IFfKdLUKTTrnSFXLDkUEOTrZQ8Qg==" data-cf-beacon='{"version":"2024.11.0","token":"6240f5c7e6c04dd386972071a807d7d5","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js/v833ccba57c9e4d2798f2e76cebdd09a11778172276447" integrity="sha512-57MDmcccJXYtNnH+ZiBwzC4jb2rvgVCEokYN+L/nLlmO8rfYT/gIpW2A569iJ/3b+0UEasghjuZH/ma3wIs/EQ==" data-cf-beacon='{"version":"2024.11.0","token":"6240f5c7e6c04dd386972071a807d7d5","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
