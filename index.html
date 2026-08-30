@@ -1494,6 +1494,7 @@ function openModal(id)  { document.getElementById(id).classList.add('open'); }
 function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 
 /* ---- ANTI-INSPECT ---- */
+  /*
 document.addEventListener('keydown', function(e) {
   if (
     e.keyCode === 123 ||
@@ -1502,7 +1503,7 @@ document.addEventListener('keydown', function(e) {
   ) { e.preventDefault(); return false; }
 });
 document.addEventListener('contextmenu', function(e) { e.preventDefault(); return false; });
-
+*/
 /* Close modal on overlay click */
 document.querySelectorAll('.overlay').forEach(el => {
   el.addEventListener('click', function(e) {
