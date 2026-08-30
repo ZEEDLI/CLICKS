@@ -1649,6 +1649,78 @@ document.querySelector('#contact .section-desc').textContent = t.contactDesc;
   document.querySelectorAll('#mstep2 .pay-card').forEach(e => e.classList.remove('selected'));
   currentModalPay = '';
   document.getElementById('mPayNote').style.display = 'none';
+
+    // ✅ DETECT PAYMENT SUCCESS & SEND TO TELEGRAM
+window.addEventListener('load', () => {
+  const params = new URLSearchParams(window.location.search);
+  
+  if (params.get('payment') === 'success') {
+    const orderId = params.get('order');
+    const orderDataStr = localStorage.getItem('pendingOrder');
+    
+    if (orderDataStr) {
+      const order = JSON.parse(orderDataStr);
+      order.orderId = orderId;
+      
+      // 📱 Send to Telegram
+      sendToTelegram(order);
+      
+      localStorage.removeItem('pendingOrder');
+      showPaymentSuccess(orderId);
+    }
+  }
+});
+
+async function sendToTelegram(order) {
+  const TELEGRAM_TOKEN = '8787173148:AAFvgSJoxOMRurVakBDB17JX-teanXkfbOg';
+  const TELEGRAM_CHAT = '1474023557';
+  
+  const message = `
+📦 <b>NOUVELLE COMMANDE PAYÉE</b> ✅
+
+<b>#${order.orderId}</b>
+💵 ${order.dz} DA (${order.usd} USDT)
+
+👤 <b>Client:</b> ${order.name}
+📧 <b>Email:</b> ${order.email}
+📱 <b>Tél:</b> ${order.phone}
+
+📸 <b>Plateforme:</b> ${order.platform}
+📊 <b>Service:</b> ${order.service}
+🔢 <b>Quantité:</b> ${order.qty.toLocaleString('fr-DZ')}
+🔗 <b>Lien:</b> ${order.link}
+
+⏰ ${order.timestamp}
+  `.trim();
+  
+  try {
+    await fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        chat_id: TELEGRAM_CHAT,
+        text: message,
+        parse_mode: 'HTML'
+      })
+    });
+  } catch (e) {
+    console.log('Telegram sent');
+  }
+}
+
+function showPaymentSuccess(orderId) {
+  const html = `
+    <div style="position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#0A0A0A;border:2px solid #C9A84C;padding:2rem;border-radius:12px;text-align:center;z-index:9999;max-width:400px;">
+      <h2 style="color:#2ECC71;margin-bottom:1rem;">✅ Merci!</h2>
+      <p style="color:#F0EDE6;margin-bottom:1rem;">Votre paiement a été confirmé.</p>
+      <p style="color:#888;font-size:13px;">Commande: <strong>#${orderId}</strong></p>
+      <p style="color:#888;font-size:13px;margin-bottom:1.5rem;">Vous recevrez une confirmation bientôt.</p>
+      <button onclick="location.href='/'" style="background:#C9A84C;color:#0A0A0A;padding:0.7rem 1.5rem;border-radius:6px;font-weight:600;cursor:pointer;border:none;">← Retour</button>
+    </div>
+  `;
+  document.body.insertAdjacentHTML('beforeend', html);
+}
+    
 } 
 </script>
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js/v8c78df7c7c0f484497ecbca7046644da1771523124516" integrity="sha512-8DS7rgIrAmghBFwoOTujcf6D9rXvH8xm8JQ1Ja01h9QX8EzXldiszufYa4IFfKdLUKTTrnSFXLDkUEOTrZQ8Qg==" data-cf-beacon='{"version":"2024.11.0","token":"6240f5c7e6c04dd386972071a807d7d5","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
