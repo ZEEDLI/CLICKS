@@ -1376,19 +1376,6 @@ async function submitCalcOrder() {
   });
   document.getElementById('cOrderNum').textContent = '#' + orderId;
   buildFinalChannels('cFinalChannels', orderId, msg);
-  fetch('https://small-butterfly-fc0c.zeedsmma.workers.dev', {
-    method: 'POST',
-    mode: 'no-cors',
-    body: JSON.stringify({
-      orderId,
-      platform: currentOrderData.platform,
-      service:  currentOrderData.service,
-      qty:      currentOrderData.qty,
-      usd:      currentOrderData.usd,
-      dz:       currentOrderData.dz,
-      paiement: currentCalcPay
-    })
-  }).catch(() => {});
   openModal('calcConfirmModal');
 }
 
