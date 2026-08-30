@@ -1324,8 +1324,16 @@ async function submitCalcOrder() {
 
   try {
     const orderId = genOrderId();
-        const orderId = genOrderId();
-
+         // ✅ SEND TELEGRAM BEFORE PAYING
+    await sendTelegramOrderPlaced({
+      orderId,
+      platform: currentOrderData.platform,
+      service: currentOrderData.service,
+      qty: currentOrderData.qty,
+      usd: currentOrderData.usd,
+      dz: currentOrderData.dz,
+      link: link
+    });
    
 
     // Call Cloudflare Worker to create Slick Pay invoice
