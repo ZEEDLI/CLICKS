@@ -1325,15 +1325,6 @@ async function submitCalcOrder() {
   try {
     const orderId = genOrderId();
          // ✅ SEND TELEGRAM BEFORE PAYING
-    await sendTelegramOrderPlaced({
-      orderId,
-      platform: currentOrderData.platform,
-      service: currentOrderData.service,
-      qty: currentOrderData.qty,
-      usd: currentOrderData.usd,
-      dz: currentOrderData.dz,
-      link: link
-    });
    
 
     // Call Cloudflare Worker to create Slick Pay invoice
@@ -1662,37 +1653,7 @@ document.querySelector('#contact .section-desc').textContent = t.contactDesc;
   currentModalPay = '';
   document.getElementById('mPayNote').style.display = 'none';
 
-    async function sendTelegramOrderPlaced(order) {
-  const TELEGRAM_TOKEN = '8787173148:AAFvgSJoxOMRurVakBDB17JX-teanXkfbOg';
-  const TELEGRAM_CHAT = '1474023557';
   
-  const message = `
-⏳ <b>COMMANDE EN ATTENTE DE PAIEMENT</b>
-
-<b>#${order.orderId}</b>
-📸 ${order.platform} - ${order.service}
-🔢 ${order.qty.toLocaleString('fr-DZ')} unités
-💵 ${order.dz} DA (${order.usd} USDT)
-🔗 ${order.link}
-
-⏳ Client redirigé vers Chargily...
-  `.trim();
-  
-  try {
-    await fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        chat_id: TELEGRAM_CHAT,
-        text: message,
-        parse_mode: 'HTML'
-      })
-    });
-  } catch (e) {
-    console.log('Sent');
-  }
-}
-
     // ✅ DETECT PAYMENT SUCCESS & SEND TO TELEGRAM
 window.addEventListener('load', () => {
   const params = new URLSearchParams(window.location.search);
