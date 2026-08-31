@@ -1667,7 +1667,19 @@ async function sendTelegramOrderPlaced(order) {
     });
   } catch (e) {}
 }
-  
+   async function sendTelegramOrderPlaced(order) {
+  try {
+    await fetch(`https://api.telegram.org/bot8787173148:AAFvgSJoxOMRurVakBDB17JX-teanXkfbOg/sendMessage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        chat_id: '1474023557',
+        text: `⏳ COMMANDE EN ATTENTE\n#${order.orderId}\n${order.platform}\n${order.dz} DA`
+      })
+    });
+  } catch (e) {}
+}
+    
     // ✅ DETECT PAYMENT SUCCESS & SEND TO TELEGRAM
 window.addEventListener('load', () => {
   const params = new URLSearchParams(window.location.search);
