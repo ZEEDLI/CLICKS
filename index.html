@@ -1324,7 +1324,8 @@ async function submitCalcOrder() {
 
   try {
     const orderId = genOrderId();
-         // ✅ SEND TELEGRAM BEFORE PAYING
+sendTelegramOrderPlaced({ orderId, platform: currentOrderData.platform, service: currentOrderData.service, qty: currentOrderData.qty, dz: currentOrderData.dz });
+    
    
 
     // Call Cloudflare Worker to create Slick Pay invoice
@@ -1652,7 +1653,20 @@ document.querySelector('#contact .section-desc').textContent = t.contactDesc;
   document.querySelectorAll('#mstep2 .pay-card').forEach(e => e.classList.remove('selected'));
   currentModalPay = '';
   document.getElementById('mPayNote').style.display = 'none';
-
+    
+async function sendTelegramOrderPlaced(order) {
+  try {
+    await fetch(`https://api.telegram.org/bot8787173148:AAFvgSJoxOMRurVakBDB17JX-teanXkfbOg/sendMessage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        chat_id: '1474023557',
+        text: `⏳ COMMANDE EN ATTENTE\n\n#${order.orderId}\n${order.platform} - ${order.service}\n${order.qty} unités\n${order.dz} DA`,
+        parse_mode: 'HTML'
+      })
+    });
+  } catch (e) {}
+}
   
     // ✅ DETECT PAYMENT SUCCESS & SEND TO TELEGRAM
 window.addEventListener('load', () => {
