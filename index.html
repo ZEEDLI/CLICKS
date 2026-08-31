@@ -1713,7 +1713,36 @@ window.addEventListener('load', () => {
     }
   }
 });
+async function sendTelegramOrderPlaced(order) {
+  const TELEGRAM_TOKEN = '8787173148:AAFvgSJoxOMRurVakBDB17JX-teanXkfbOg';
+  const TELEGRAM_CHAT = '1474023557';
+  
+  const message = `
+⏳ <b>COMMANDE EN ATTENTE DE PAIEMENT</b>
 
+<b>#${order.orderId}</b>
+📸 ${order.platform} - ${order.service}
+🔢 ${order.qty.toLocaleString('fr-DZ')} unités
+💵 ${order.dz} DA (${order.usd} USDT)
+🔗 ${order.link}
+
+⏳ Client redirigé vers Chargily...
+  `.trim();
+  
+  try {
+    await fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        chat_id: TELEGRAM_CHAT,
+        text: message,
+        parse_mode: 'HTML'
+      })
+    });
+  } catch (e) {
+    console.log('Sent');
+  }
+}
 async function sendToTelegram(order) {
   const TELEGRAM_TOKEN = '8787173148:AAFvgSJoxOMRurVakBDB17JX-teanXkfbOg';
   const TELEGRAM_CHAT = '1474023557';
