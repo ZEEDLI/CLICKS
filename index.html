@@ -349,23 +349,7 @@ footer .logo-wrap img { height: 42px; width: auto; margin: 0 auto; mix-blend-mod
         </div>
 
         <div id="paySection" style="display:none;flex-direction:column;gap:1rem;">
-          <div class="customer-box">
-            <span class="field-label" data-i18n="custTitle">Vos coordonnées</span>
-            <div>
-              <label class="field-label" for="cName" data-i18n="lblName">Votre nom</label>
-              <input class="field-input" type="text" id="cName" autocomplete="name" placeholder="Ahmed">
-            </div>
-            <div>
-              <label class="field-label" for="cEmail" data-i18n="lblEmail">Votre email</label>
-              <input class="field-input" type="email" id="cEmail" autocomplete="email" placeholder="exemple@gmail.com">
-            </div>
-            <div>
-              <label class="field-label" for="cPhone" data-i18n="lblPhone">Votre téléphone</label>
-              <input class="field-input" type="tel" id="cPhone" autocomplete="tel" placeholder="06 XX XX XX XX">
-            </div>
-          </div>
 
-          <div>
             <span class="field-label" data-i18n="lblPay">Mode de paiement</span>
             <div class="pay-methods">
               <div class="pay-card" onclick="selectPay(this,'cib')">
@@ -653,36 +637,45 @@ function selectPay(el, type) {
 }
 
 /* ============================================================
-   CUSTOMER DATA
-   ============================================================ */
-function readCustomer() {
-  return {
-    name: document.getElementById('cName').value.trim(),
-    email: document.getElementById('cEmail').value.trim(),
-    phone: document.getElementById('cPhone').value.trim()
-  };
-}
-
-function customerError(c) {
-  if (!c.name || !c.email || !c.phone) return 'Remplissez votre nom, email et téléphone.';
-  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(c.email)) return 'Adresse email invalide.';
-  if (!/^[0-9+\s]{9,}$/.test(c.phone)) return 'Numéro de téléphone invalide.';
-  return '';
-}
-
-/* ============================================================
    ORDER
    ============================================================ */
+async function notifyWorker(event, order) {
+  try {
+    await fetch(CONFIG.workerUrl + '/notify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ event, order }),
+      keepalive: true
+    });
+  } catch (e) {}
+}
+
 async function submitCalcOrder() {
   const link = document.getElementById('link').value.trim();
-  const customer = readCustomer();
   const btn = document.getElementById('confirmBtn');
 
   if (!currentOrderData) return alert('Entrez une quantité pour voir le prix.');
   if (!link) return alert('Remplissez le lien de votre profil / post / page.');
-  const err = customerError(customer);
-  if (err) return alert(err);
   if (!currentCalcPay) return alert('Choisissez un mode de paiement.');
+
+  const orderId = 'ZD-' + Math.floor(100000 + Math.random() * 900000);
+  const flexyFee = currentCalcPay === 'flexy';
+  const finalDz = currentOrderData.dz + (flexyFee ? 300 : 0);
+
+  const order = {
+    orderId,
+    platform: currentOrderData.platform,
+    service: currentOrderData.service,
+    qty: currentOrderData.qty,
+    usd: currentOrderData.usd,
+    dz: finalDz,
+    link,
+    paiement: currentCalcPay,
+    time: new Date().toLocaleString('fr-DZ')
+  };
+
+  // Tell you the moment the customer clicks, before anything else
+  await notifyWorker('order_started', order);
 
   /* CIB: the Worker recalculates the price and creates the Chargily checkout */
   if (currentCalcPay === 'cib') {
@@ -693,10 +686,10 @@ async function submitCalcOrder() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          ...customer,
-          platform: currentOrderData.platform,
-          service: currentOrderData.service,
-          qty: currentOrderData.qty,
+          orderId,
+          platform: order.platform,
+          service: order.service,
+          qty: order.qty,
           link
         })
       });
@@ -707,7 +700,6 @@ async function submitCalcOrder() {
       }
       alert('❌ ' + (data.error || 'Paiement impossible pour le moment.'));
     } catch (e) {
-      console.error(e);
       alert('❌ Erreur réseau. Réessayez.');
     }
     btn.textContent = translations[currentLang].btnConfirm;
@@ -715,20 +707,13 @@ async function submitCalcOrder() {
     return;
   }
 
-  /* Flexy / USDT: order is confirmed by WhatsApp, Instagram or Messenger */
-  const orderId = 'ZD-' + Math.floor(100000 + Math.random() * 900000);
-  const flexyFee = currentCalcPay === 'flexy';
-  const finalDz = currentOrderData.dz + (flexyFee ? 300 : 0);
-
+  /* Flexy / USDT: the customer sends the order number to you */
   const text = buildOrderText(orderId, {
-    Service: currentOrderData.service + ' (' + currentOrderData.qty.toLocaleString('fr-DZ') + ')',
-    Plateforme: currentOrderData.platform,
-    Prix: currentOrderData.usd + ' USDT / ' + finalDz + ' DA' + (flexyFee ? ' (+300 DA frais Flexy)' : ''),
-    Paiement: currentCalcPay === 'flexy' ? 'Flexy' : 'USDT',
-    Lien: link,
-    Nom: customer.name,
-    Email: customer.email,
-    Téléphone: customer.phone
+    Service: order.service + ' (' + order.qty.toLocaleString('fr-DZ') + ')',
+    Plateforme: order.platform,
+    Prix: order.usd + ' USDT / ' + finalDz + ' DA' + (flexyFee ? ' (+300 DA frais Flexy)' : ''),
+    Paiement: flexyFee ? 'Flexy' : 'USDT',
+    Lien: link
   });
 
   document.getElementById('cOrderNum').textContent = '#' + orderId;
