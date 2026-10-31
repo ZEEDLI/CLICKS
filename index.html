@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="fr" dir="ltr">
 <head>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"> </script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ZEED — Booste ta présence sur les réseaux sociaux!</title>
@@ -408,7 +409,23 @@ footer .logo-wrap img { height: 42px; width: auto; margin: 0 auto; mix-blend-mod
   <p>© 2026 ZEED Media. Tous droits réservés.</p>
   <p style="margin-top:.25rem;">Services de croissance sur les réseaux sociaux — Algérie</p>
 </footer>
-
+  
+<div class="overlay" id="usdtModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Paiement USDT</div>
+      <button class="modal-close" onclick="closeModal('usdtModal')">✕</button>
+    </div>
+    <div style="text-align:center;">
+      <div id="usdtQr" style="display:flex;justify-content:center;margin:1rem 0;"></div>
+      <p id="usdtAmount" style="font-family:'Syne',sans-serif;font-size:1.2rem;color:var(--gold);"></p>
+      <p id="usdtNetwork" style="font-size:12px;color:var(--muted);margin-bottom:.5rem;"></p>
+      <div class="order-num-display" id="usdtAddress" style="font-size:.75rem;word-break:break-all;"></div>
+      <p style="font-size:12px;color:var(--muted);">Envoyez le montant exact sur le réseau indiqué, puis envoyez-nous votre numéro de commande et la capture.</p>
+    </div>
+  </div>
+</div>
+  
 <div class="overlay" id="calcConfirmModal">
   <div class="modal">
     <div class="modal-header">
@@ -678,7 +695,15 @@ async function submitCalcOrder() {
 
   // Tell you the moment the customer clicks, before anything else
   await notifyWorker('order_started', order);
-
+  
+  /* USDT : afficher le popup avec le QR */
+  if (currentCalcPay === 'crypto') {
+    return showUsdtQr(orderId, {
+      platform: order.platform,
+      service: order.service,
+      qty: order.qty
+    });
+  }
   /* CIB: the Worker recalculates the price and creates the Chargily checkout */
   if (currentCalcPay === 'cib') {
     btn.textContent = translations[currentLang].btnRedirect;
@@ -805,6 +830,28 @@ document.addEventListener('DOMContentLoaded', () => {
   updateServiceOptions('Facebook');
   document.getElementById('link').placeholder = platformPlaceholders['Facebook'];
 });
+
+  async function showUsdtQr(orderId, order) {
+  try {
+    const res = await fetch(CONFIG.workerUrl + '/usdt-qr', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ...order, orderId })
+    });
+    const data = await res.json();
+    if (!data.success) return alert('❌ ' + data.error);
+
+    document.getElementById('usdtQr').innerHTML = '';
+    new QRCode(document.getElementById('usdtQr'), { text: data.address, width: 200, height: 200 });
+    document.getElementById('usdtAmount').textContent =
+      data.amountUsdt + ' USDT (≈ ' + data.amountDa.toLocaleString('fr-DZ') + ' DA)';
+    document.getElementById('usdtNetwork').textContent = 'Réseau : ' + data.network + ' uniquement';
+    document.getElementById('usdtAddress').textContent = data.address;
+    openModal('usdtModal');
+  } catch (e) {
+    alert('❌ Erreur réseau : ' + e.message);
+  }
+}
 </script>
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js/v8c78df7c7c0f484497ecbca7046644da1771523124516" integrity="sha512-8DS7rgIrAmghBFwoOTujcf6D9rXvH8xm8JQ1Ja01h9QX8EzXldiszufYa4IFfKdLUKTTrnSFXLDkUEOTrZQ8Qg==" data-cf-beacon='{"version":"2024.11.0","token":"6240f5c7e6c04dd386972071a807d7d5","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 </body>
