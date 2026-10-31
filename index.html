@@ -625,6 +625,7 @@ function calcPrice() {
   paySection.style.display = 'flex';
 
   currentOrderData = { platform: currentPlatform, service: label, qty, usd: q.usd, dz: q.dz };
+  result.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 
 function selectPay(el, type) {
