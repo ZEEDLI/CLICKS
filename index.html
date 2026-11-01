@@ -417,11 +417,39 @@ footer .logo-wrap img { height: 42px; width: auto; margin: 0 auto; mix-blend-mod
       <button class="modal-close" onclick="closeModal('usdtModal')">✕</button>
     </div>
     <div style="text-align:center;">
+
+      <p style="font-size:12px;color:var(--muted);margin:.5rem 0 .2rem;">Montant à envoyer</p>
+      <p id="usdtAmount" style="font-family:'Syne',sans-serif;font-size:1.6rem;color:var(--gold);margin:0;"></p>
+
+      <hr style="border:none;border-top:1px solid var(--muted);opacity:.4;margin:1.2rem 0;">
+
+      <p style="font-size:13px;margin-bottom:.3rem;"><b>Option 1 : adresse USDT</b></p>
+      <p id="usdtNetwork" style="font-size:12px;color:var(--muted);margin:0;"></p>
       <div id="usdtQr" style="display:flex;justify-content:center;margin:1rem 0;"></div>
-      <p id="usdtAmount" style="font-family:'Syne',sans-serif;font-size:1.2rem;color:var(--gold);"></p>
-      <p id="usdtNetwork" style="font-size:12px;color:var(--muted);margin-bottom:.5rem;"></p>
       <div class="order-num-display" id="usdtAddress" style="font-size:.75rem;word-break:break-all;"></div>
-      <p style="font-size:12px;color:var(--muted);">Envoyez le montant exact sur le réseau indiqué, puis envoyez-nous votre numéro de commande et la capture.</p>
+      <button onclick="copyText('usdtAddress', this)" style="margin-top:.5rem;">Copier l'adresse</button>
+
+      <hr style="border:none;border-top:1px solid var(--muted);opacity:.4;margin:1.2rem 0;">
+
+      <p style="font-size:13px;margin-bottom:.8rem;"><b>Option 2 : paiement interne (sans frais)</b></p>
+
+      <div style="text-align:left;font-size:13px;margin-bottom:1rem;">
+        <p style="margin:.2rem 0;"><b>Redot Pay</b></p>
+        <p style="margin:.2rem 0;">Nom : <b>ZEEDSMMA</b></p>
+        <p style="margin:.2rem 0;">UID : <b id="redotUid">1935252057</b>
+          <button onclick="copyText('redotUid', this)">Copier</button></p>
+        <p style="margin:.2rem 0;font-size:12px;color:var(--muted);">⚠️ Vérifiez le nom avant d'envoyer.</p>
+      </div>
+
+      <div style="text-align:left;font-size:13px;margin-bottom:1rem;">
+        <p style="margin:.2rem 0;"><b>Binance</b></p>
+        <p style="margin:.2rem 0;">Nom : <b>ZEEDSMMA</b></p>
+        <p style="margin:.2rem 0;">UID : <b id="binanceUid">304529368</b>
+          <button onclick="copyText('binanceUid', this)">Copier</button></p>
+        <p style="margin:.2rem 0;font-size:12px;color:var(--muted);">⚠️ Vérifiez le nom avant d'envoyer.</p>
+      </div>
+
+      <p style="font-size:12px;color:var(--muted);">Envoyez le montant exact, puis envoyez-nous votre numéro de commande et la capture.</p>
     </div>
   </div>
 </div>
@@ -492,7 +520,7 @@ const platformPlaceholders = {
 const PAY_INFO = {
   cib: '<strong>CIB :</strong> paiement sécurisé par carte bancaire. Vous serez redirigé vers la page de paiement.',
   flexy: '<strong>Flexy :</strong> recharge sur notre numéro Flexy. Un supplément de 300 DA s\'applique.',
-  crypto: '<strong>USDT (TRC20) :</strong> adresse wallet envoyée après confirmation. Compatible Binance et RedotPay.'
+  crypto: '<strong>USDT :</strong> QR code et adresse TRC20, ou paiement interne Binance / RedotPay (sans frais).'
 };
 
 const translations = {
@@ -831,6 +859,15 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('link').placeholder = platformPlaceholders['Facebook'];
 });
 
+function copyText(id, btn) {
+  const text = document.getElementById(id).textContent.trim();
+  navigator.clipboard.writeText(text).then(() => {
+    const old = btn.textContent;
+    btn.textContent = '✓ Copié';
+    setTimeout(() => btn.textContent = old, 1500);
+  });
+}
+  
   async function showUsdtQr(orderId, order) {
   try {
     const res = await fetch(CONFIG.workerUrl + '/usdt-qr', {
