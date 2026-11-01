@@ -718,7 +718,7 @@ function calcPrice(scroll = true) {
   result.style.display = 'block';
   paySection.style.display = 'flex';
 
-  currentOrderData = { platform: currentPlatform, service: label, qty };
+    currentOrderData = { platform: currentPlatform, service: label, qty, usd: q.usd, dz: q.dz };
   if (scroll) result.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 
@@ -753,6 +753,17 @@ async function postJSON(path, body) {
   return { status: res.status, data };
 }
 
+async function notifyWorker(event, order) {
+  try {
+    await fetch(CONFIG.workerUrl + '/notify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ event, order }),
+      keepalive: true
+    });
+  } catch (e) {}
+}
+
 async function submitCalcOrder() {
   const link = document.getElementById('link').value.trim();
   const btn = document.getElementById('confirmBtn');
@@ -761,39 +772,46 @@ async function submitCalcOrder() {
   if (!link) return alert(t('alertLink'));
   if (!currentCalcPay) return alert(t('alertPay'));
 
-  btn.disabled = true;
-  btn.textContent = t('btnWait');
+  const orderId = 'ZD-' + Math.floor(100000 + Math.random() * 900000);
+  const flexyFee = currentCalcPay === 'flexy';
+  const finalDz = currentOrderData.dz + (flexyFee ? 300 : 0);
 
-  // 1) Create the order on the Worker
-  let r;
-  try {
-    r = await postJSON('/order', {
-      platform: currentOrderData.platform,
-      service: currentOrderData.service,
-      qty: currentOrderData.qty,
-      link,
-      paiement: currentCalcPay
-    });
-  } catch (e) {
-    alert('❌ ' + t('alertNet'));
-    return resetConfirmBtn();
-  }
-  if (r.status === 429) { alert('❌ ' + t('alertTooMany')); return resetConfirmBtn(); }
-  if (!r.data.success) { alert('❌ ' + (r.data.error || t('alertPayFail'))); return resetConfirmBtn(); }
+  const order = {
+    orderId,
+    platform: currentOrderData.platform,
+    service: currentOrderData.service,
+    qty: currentOrderData.qty,
+    usd: currentOrderData.usd,
+    dz: finalDz,
+    link,
+    paiement: currentCalcPay,
+    time: new Date().toLocaleString('fr-DZ')
+  };
 
-  const { orderId, usd, dz, token } = r.data;
+  // Telegram: "order started"
+  await notifyWorker('order_started', order);
 
-  // 2a) USDT: show the QR popup
+  // USDT: popup with QR code + UIDs
   if (currentCalcPay === 'crypto') {
-    await showUsdtQr(orderId, token);
-    return resetConfirmBtn();
+    return showUsdtQr(orderId, {
+      platform: order.platform,
+      service: order.service,
+      qty: order.qty
+    });
   }
 
-  // 2b) CIB: create the Chargily checkout from the stored order
+  // CIB: the Worker recalculates the price and creates the Chargily checkout
   if (currentCalcPay === 'cib') {
     btn.textContent = t('btnRedirect');
+    btn.disabled = true;
     try {
-      const inv = await postJSON('/invoice', { orderId, token });
+      const inv = await postJSON('/invoice', {
+        orderId,
+        platform: order.platform,
+        service: order.service,
+        qty: order.qty,
+        link
+      });
       if (inv.data.success && inv.data.checkoutUrl) {
         window.location.href = inv.data.checkoutUrl;
         return;
@@ -802,21 +820,21 @@ async function submitCalcOrder() {
     } catch (e) {
       alert('❌ ' + t('alertNet'));
     }
-    return resetConfirmBtn();
+    resetConfirmBtn();
+    return;
   }
 
-  // 2c) Flexy: the customer sends the order number to you
+  // Flexy: the customer sends the order number to you
   const text = buildOrderText(orderId, {
-    Service: currentOrderData.service + ' (' + currentOrderData.qty.toLocaleString('fr-DZ') + ')',
-    Plateforme: currentOrderData.platform,
-    Prix: usd + ' USDT / ' + dz + ' DA (incl. 300 DA frais Flexy)',
+    Service: order.service + ' (' + order.qty.toLocaleString('fr-DZ') + ')',
+    Plateforme: order.platform,
+    Prix: order.usd + ' USDT / ' + finalDz + ' DA (+300 DA frais Flexy)',
     Paiement: 'Flexy',
     Lien: link
   });
   document.getElementById('cOrderNum').textContent = '#' + orderId;
   buildFinalChannels(text);
   openModal('calcConfirmModal');
-  resetConfirmBtn();
 }
 
 // The message sent to you stays in French on purpose
@@ -855,9 +873,10 @@ function renderUsdtNetwork() {
   el.textContent = usdtNetworkName ? t('usdtNetwork', { n: usdtNetworkName }) : '';
 }
 
-async function showUsdtQr(orderId, token) {  let r;
+async function showUsdtQr(orderId, order) {
+  let r;
   try {
-    r = await postJSON('/usdt-qr', { orderId, token });
+    r = await postJSON('/usdt-qr', { ...order, orderId });
   } catch (e) {
     return alert('❌ ' + t('alertNet'));
   }
@@ -874,7 +893,7 @@ async function showUsdtQr(orderId, token) {  let r;
   document.getElementById('usdtAddress').textContent = data.address;
   openModal('usdtModal');
 }
-
+    
 function copyText(id, btn) {
   const text = document.getElementById(id).textContent.trim();
   navigator.clipboard.writeText(text).then(() => {
