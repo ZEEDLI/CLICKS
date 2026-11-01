@@ -781,11 +781,11 @@ async function submitCalcOrder() {
   if (r.status === 429) { alert('❌ ' + t('alertTooMany')); return resetConfirmBtn(); }
   if (!r.data.success) { alert('❌ ' + (r.data.error || t('alertPayFail'))); return resetConfirmBtn(); }
 
-  const { orderId, usd, dz } = r.data;
+  const { orderId, usd, dz, token } = r.data;
 
   // 2a) USDT: show the QR popup
   if (currentCalcPay === 'crypto') {
-    await showUsdtQr(orderId);
+    await showUsdtQr(orderId, token);
     return resetConfirmBtn();
   }
 
@@ -793,7 +793,7 @@ async function submitCalcOrder() {
   if (currentCalcPay === 'cib') {
     btn.textContent = t('btnRedirect');
     try {
-      const inv = await postJSON('/invoice', { orderId });
+      const inv = await postJSON('/invoice', { orderId, token });
       if (inv.data.success && inv.data.checkoutUrl) {
         window.location.href = inv.data.checkoutUrl;
         return;
@@ -855,10 +855,9 @@ function renderUsdtNetwork() {
   el.textContent = usdtNetworkName ? t('usdtNetwork', { n: usdtNetworkName }) : '';
 }
 
-async function showUsdtQr(orderId) {
-  let r;
+async function showUsdtQr(orderId, token) {  let r;
   try {
-    r = await postJSON('/usdt-qr', { orderId });
+    r = await postJSON('/usdt-qr', { orderId, token });
   } catch (e) {
     return alert('❌ ' + t('alertNet'));
   }
