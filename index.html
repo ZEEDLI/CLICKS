@@ -942,7 +942,20 @@ function toggleLang() {
   currentLang = currentLang === 'fr' ? 'ar' : 'fr';
   applyLang(currentLang);
 }
+/* ============================================================
+   ANTI-INSPECT (frein léger, pas une vraie protection)
+   ============================================================ */
+document.addEventListener('contextmenu', e => e.preventDefault());
 
+document.addEventListener('keydown', e => {
+  const k = e.key.toLowerCase();
+  const blocked =
+    e.key === 'F12' ||                                            // F12, Ctrl+F12, Shift+F12, Alt+F12
+    (e.ctrlKey && e.shiftKey && ['i', 'j', 'c'].includes(k)) ||   // Ctrl+Shift+I / J / C
+    (e.ctrlKey && ['u', 's'].includes(k)) ||                      // Ctrl+U (source), Ctrl+S (enregistrer)
+    (e.metaKey && e.altKey && ['i', 'j', 'c', 'u'].includes(k));  // équivalents Mac
+  if (blocked) e.preventDefault();
+});
 /* ============================================================
    EVENTS
    ============================================================ */
